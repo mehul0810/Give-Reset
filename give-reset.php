@@ -45,11 +45,25 @@ function give_reset_display_admin_menu_callback( $wp_admin_bar ) {
 		),
 	) );
 
+	$give_backup_settings = get_option( 'give_reset_backup_give_settings' );
+	if ( is_array( $give_backup_settings ) && count( $give_backup_settings ) > 0 ) {
+
+		$wp_admin_bar->add_menu( array(
+			'parent' => 'give-reset-main',
+			'id'     => 'give-restore-all-settings',
+			'href'   => admin_url( '?give_action=restore_all_settings' ),
+			'title'  => __( 'Restore All Settings', 'give-reset' ),
+			'meta'   => array(
+				'class' => '',
+			),
+		) );
+	}
+
 	$wp_admin_bar->add_menu( array(
 		'parent' => 'give-reset-main',
 		'id'     => 'give-reset-core-settings',
 		'href'   => admin_url( '?give_action=reset_core_settings' ),
-		'title'  => __( 'Core Settings', 'give-reset' ),
+		'title'  => __( 'Reset Core Settings', 'give-reset' ),
 		'meta'   => array(
 			'class' => '',
 		),
@@ -66,6 +80,12 @@ add_action( 'admin_bar_menu', 'give_reset_display_admin_menu_callback' );
  * @since 1.0.0
  */
 function give_reset_core_settings_action_callback() {
+
+	// Get all Give Settings.
+	$give_settings = give_get_settings();
+
+	// Backup original Give Settings.
+	update_option( 'give_reset_backup_give_settings', $give_settings );
 
 	// Backup some required settings.
 	$success_page = give_get_option( 'success_page' );
@@ -107,4 +127,21 @@ function give_reset_core_settings_action_callback() {
 	give_die();
 }
 add_action( 'give_reset_core_settings', 'give_reset_core_settings_action_callback' );
+
+/**
+ * Callback to restore all settings on clicking the button in admin bar.
+ *
+ * @since 1.0.0
+ */
+function give_restore_all_settings_action_callback() {
+
+	// Restore Give settings.
+	update_option( 'give_settings', get_option( 'give_reset_backup_give_settings' ) );
+
+	// Redirect to main settings page.
+	wp_safe_redirect( esc_url_raw( admin_url( 'edit.php?post_type=give_forms&page=give-settings' ) ) );
+
+	give_die();
+}
+add_action( 'give_restore_all_settings', 'give_restore_all_settings_action_callback' );
 
