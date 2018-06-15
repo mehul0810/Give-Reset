@@ -136,7 +136,11 @@ add_action( 'give_reset_core_settings', 'give_reset_core_settings_action_callbac
 function give_restore_all_settings_action_callback() {
 
 	// Restore Give settings.
-	update_option( 'give_settings', get_option( 'give_reset_backup_give_settings' ) );
+	$is_backup_restored = update_option( 'give_settings', get_option( 'give_reset_backup_give_settings' ) );
+
+	if ( $is_backup_restored ) {
+		delete_option( 'give_reset_backup_give_settings' );
+	}
 
 	// Redirect to main settings page.
 	wp_safe_redirect( esc_url_raw( admin_url( 'edit.php?post_type=give_forms&page=give-settings' ) ) );
