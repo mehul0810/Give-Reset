@@ -97,7 +97,11 @@ function give_reset_core_settings_action_callback() {
 	// Delete Give Settings Option.
 	delete_option( 'give_settings' );
 
+	// Delete Give Version.
 	delete_option( 'give_version' );
+
+	// Delete existing upgrades.
+	delete_option( 'give_completed_upgrades' );
 
 	// Restart Give Installation Process.
 	give_install();
